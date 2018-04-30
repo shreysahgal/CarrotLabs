@@ -1,18 +1,24 @@
 #include <Arduino.h>
 #include <Encoder.h>
-#include <Pid_V1.>
+#include <Pid_V1.h>
 
 int INA = 3;
 int INB = 4;
 int PWM = 5;
 
+double motorSetL, encoderInL, motorOutL;
+PID leftMotor(&encoderInL, &motorOutL, &motorSetL,2,5,1, DIRECT);
+
 void setup() {
+//left motor outputs
 pinMode(INA, OUTPUT);
 pinMode(INB, OUTPUT);
 pinMode(PWM, OUTPUT);
-
 //encoder setup
     Encoder motor1(ENC1, ENC2);
+//pid setup
+leftMotor.SetMode(automatic);
+
 
 }
 
@@ -43,6 +49,11 @@ void motorControl (int input){
 }
 
 //closed loop motor control
-void pidMotor(int input){
+void pidMotor(int distance){
+  motorSetL = distance;
+  encoderInL = motor1.read();
+  leftMotor.Compute();
+  motorControl(motorOutL);
+
 
 }
